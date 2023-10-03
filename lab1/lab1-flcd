@@ -56,3 +56,14 @@ while ( i < num_list.len ) &
 &
 
 ____________________________________
+
+p4
+
+num_list: [1,2,3,4,5];
+
+while ( i < num_list.len ) &
+    num_list[i] : num_list[i] + 1;
+    i : i + 1;
+&
+
+ret num_list;
