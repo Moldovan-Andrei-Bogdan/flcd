@@ -1,0 +1,58 @@
+eql is ==
+gtr is >
+lst is <
+lste is <=
+mdl is %
+and is &&
+block of code is delimited by &
+ret is return
+assignment operator is :
+multiply operator mul
+div operator is div
+
+__________________________________
+
+p1
+
+num_list : [3, 5, 4, 8];
+max : -Inf;
+
+while (i lst num_list.len) &
+    if ( num_list[i] gtr max ) &
+        max : num_list[i];
+    &
+    i : i + 1;
+&
+
+ret max;
+
+__________________________________
+
+p2
+
+num : 16;
+d : 2;
+is_not_prime : true;
+
+while ( d mul d lste num and is_not_prime) &
+    if ( num mdl d eql 0 ) &
+        is_not_prime : false;
+    &
+    d : d + 1;
+&
+
+ret is_not_prime;
+
+___________________________________
+
+p3
+
+num_list : [1,2,3,4,5];
+sum is 0; ///lexical error
+
+while ( i < num_list.len ) &
+    sum : sum + num_list[i];
+    i : i + 1;
+&
+
+____________________________________
