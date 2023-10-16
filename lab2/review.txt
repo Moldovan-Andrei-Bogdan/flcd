@@ -1,0 +1,3 @@
+Distinct Syntax: Uses unique operators like "$", "€", and "¥".
+Extended Alphabet: Includes underline for identifier flexibility.
+Lexic Diversity: Features reserved words like "adu" and "printeaza".
