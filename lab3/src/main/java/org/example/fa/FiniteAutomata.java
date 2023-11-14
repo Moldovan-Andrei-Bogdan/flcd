@@ -18,6 +18,8 @@ public class FiniteAutomata {
     private List<String> outputStates;
     private String filename;
 
+    private boolean isDFA;
+
     public FiniteAutomata(String filename) {
         this.filename = filename;
         this.states = new ArrayList<>();
@@ -25,6 +27,7 @@ public class FiniteAutomata {
         this.transitionsV2 = new HashMap<>();
         this.initialState = "";
         this.outputStates = new ArrayList<>();
+        this.isDFA = true;
 
         try {
             init();
@@ -72,7 +75,12 @@ public class FiniteAutomata {
             String label = individualValues.get(2);
 
             Pair<String, String> key = new ImmutablePair<>(from, label);
-            this.transitionsV2.put(key, to);
+
+            if (this.transitionsV2.containsKey(key)) {
+                this.isDFA = false;
+            } else {
+                this.transitionsV2.put(key, to);
+            }
         }
     }
 
@@ -181,5 +189,9 @@ public class FiniteAutomata {
         }
 
         return acceptedWord.toString();
+    }
+
+    boolean check_if_deterministic() {
+        return this.isDFA;
     }
 }

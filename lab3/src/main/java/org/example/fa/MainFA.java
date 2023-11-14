@@ -13,6 +13,7 @@ public class MainFA {
         System.out.println("5. Print transitions");
         System.out.println("6. Check word");
         System.out.println("7. Get matching substring");
+        System.out.println("8. Check DFA");
         System.out.println("0. Exit");
 
         while (true) {
@@ -45,6 +46,9 @@ public class MainFA {
                         System.out.println(accepted);
                     }
                     break;
+
+                case 8:
+                    System.out.println(fa.check_if_deterministic()); break;
 
                 case 0:
                     System.exit(0);
