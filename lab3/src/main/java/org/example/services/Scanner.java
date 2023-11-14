@@ -4,6 +4,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.example.entity.SymbolTable;
 import org.example.exception.ScannerException;
+import org.example.fa.FiniteAutomata;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,6 +32,8 @@ public class Scanner {
     private SymbolTable symbolTable;
 
     private List<Pair<String, Pair<Integer, Integer>>> PIF;
+
+    private List<Pair<Integer, String>> errors;
 
     public Scanner() {
         this.symbolTable = new SymbolTable(47);
@@ -87,12 +90,13 @@ public class Scanner {
         Matcher invalidOpenedStringMatcher = regexForInvalidOpenedString.matcher(program.substring(index));
 
         if (!stringConstantMatcher.find()) {
+
             if (invalidSingleCharMatcher.find()) {
                 throw new ScannerException("Invalid string constant at line " + currentLine);
             }
 
             if (invalidOpenedStringMatcher.find()) {
-                throw new ScannerException("Missing \" at line " + currentLine);
+                throw new ScannerException("Missing \" at token at line " + currentLine);
             }
 
             return false;
@@ -115,21 +119,36 @@ public class Scanner {
     }
 
     private boolean treatIntConstant(){
-        Pattern regexForIntConstant = Pattern.compile("^([+-]?[1-9][0-9]*|0)");
+//        Pattern regexForIntConstant = Pattern.compile("^([+-]?[1-9][0-9]*|0)");
         Pattern regexForInvalidIntConstant = Pattern.compile("^([+-]?[1-9][0-9]*|0)[a-zA-z_]");
 
-        Matcher intConstantMatcher = regexForIntConstant.matcher(program.substring(index));
+//        Matcher intConstantMatcher = regexForIntConstant.matcher(program.substring(index));
         Matcher InvalidIntConstantMatcher = regexForInvalidIntConstant.matcher(program.substring(index));
 
-        if (!intConstantMatcher.find()) {
-            return false;
-        }
+//        if (!intConstantMatcher.find()) {
+//            return false;
+//        }
 
         if (InvalidIntConstantMatcher.find()) {
             return false;
         }
 
-        String intConstant = intConstantMatcher.group(1);
+//        String intConstant = intConstantMatcher.group(1);
+
+        var fa = new FiniteAutomata("src/main/resources/int_constant.in");
+        var intConstant = fa.getNextAccepted(program.substring(index));
+
+        if (Objects.equals(intConstant, null)) {
+            return false;
+        }
+
+        if ((intConstant.charAt(0) == '+' || intConstant.charAt(0) == '-')
+                && PIF.size() > 0
+                && (PIF.get(PIF.size() - 1).getLeft().equals("int const")
+                || PIF.get(PIF.size() - 1).getLeft().equals("string const")
+                || PIF.get(PIF.size() - 1).getLeft().equals("identifier"))) {
+            return false;
+        }
 
         index += intConstant.length();
 
@@ -161,15 +180,23 @@ public class Scanner {
     }
 
     private boolean treatIdentifier() {
-        var regexForIdentifier = Pattern.compile("^([a-zA-Z_][a-zA-Z0-9_]*)");
+//        var regexForIdentifier = Pattern.compile("^([a-zA-Z_][a-zA-Z0-9_]*)");
+//
+//        var matcher = regexForIdentifier.matcher(program.substring(index));
+//
+//        if (!matcher.find()) {
+//            return false;
+//        }
+//
+//        var identifier = matcher.group(1);
 
-        var matcher = regexForIdentifier.matcher(program.substring(index));
+        var fa = new FiniteAutomata("src/main/resources/identifier.in");
 
-        if (!matcher.find()) {
+        var identifier = fa.getNextAccepted(program.substring(index));
+
+        if (identifier == null) {
             return false;
         }
-
-        var identifier = matcher.group(1);
 
         if (!checkIfValid(identifier, program.substring(index))) {
             return false;
@@ -182,7 +209,7 @@ public class Scanner {
         } catch (Exception e) {
             position = symbolTable.getPositionIdentifier(identifier);
         }
-        PIF.add(new ImmutablePair<>("identifier", position));
+        PIF.add(new ImmutablePair<>(identifier, position));
 
         return true;
     }
@@ -193,8 +220,9 @@ public class Scanner {
         for (var reservedToken: reservedWords) {
             if (possibleToken.startsWith(reservedToken)) {
                 var regex = "^" + "[a-zA-Z0-9_]*" + reservedToken + "[a-zA-Z0-9_]+";
+                Matcher matcher = Pattern.compile(regex).matcher(possibleToken);
 
-                if (Pattern.compile(regex).matcher(possibleToken).find()) {
+                if (matcher.find()) {
                     return false;
                 }
 
