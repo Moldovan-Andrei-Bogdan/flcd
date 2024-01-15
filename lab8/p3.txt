@@ -1,0 +1,19 @@
+prog {
+    n (int), number (int);
+    print("How many numbers do you want to sum?");
+
+    read(n);
+
+    prod (int), index (int);
+    prod = 1;
+
+    index = 1;
+
+    while index <= n {
+        read(number);
+        prod = prod * number;
+    };
+    
+    print("The product is");
+    print(prod);
+}
